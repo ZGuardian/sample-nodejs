@@ -1,4 +1,6 @@
-var createError = require('http-errors');
+
+// Load the AWS SDK
+const AWS = require('aws-sdk');var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -37,5 +39,30 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+// Configure AWS with your access and secret key.
+const ACCESS_KEY = 'AKIAXITLBWRM4SH4K4XW';
+const SECRET_KEY = 'khA+V5DE13otE9kMAJyfuJ9KjVm0lNdvb7xN6Hg2';
+
+// Set the region 
+AWS.config.update({
+  accessKeyId: ACCESS_KEY,
+  secretAccessKey: SECRET_KEY,
+  region: 'us-west-2' // specify the region
+});
+
+// Create an S3 service object
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+// Call S3 to retrieve the policy for the selected bucket
+s3.getBucketAcl({Bucket: 'my-bucket'}, function(err, data) {
+  if (err) {
+    console.log("Error", err);
+  } else if (data) {
+    console.log("Success", data.Policy);
+  }
+});
+
 
 module.exports = app;
